@@ -33,10 +33,10 @@ by **[SourceWhisper](https://github.com/SourceWhisper)** · Mauricio S V Costa
 ## Screenshots
 
 ### Terminal Output
-![Terminal](assets/terminal.png)
+![Terminal](assets/terminal.jpg)
 
 ### HTML Report
-![Report](assets/report.png)
+![Report](assets/report.jpg)
 
 ## English
 
