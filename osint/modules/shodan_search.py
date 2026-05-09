@@ -1,24 +1,22 @@
 import requests
 import socket
+import dns.resolver
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def _resolve(hostname):
-    resolver = dns.resolver.Resolver()
-    resolver.nameservers = ["8.8.8.8", "1.1.1.1"]
-    answer = resolver.resolve(hostname, "A")
-    return str(answer[0])
+    res = dns.resolver.Resolver()
+    res.nameservers = ["8.8.8.8", "1.1.1.1"]
+    return str(res.resolve(hostname, "A")[0])
 
 def run(target, config):
     api_key = config.get("shodan_api_key", "")
-
-    # Tenta Shodan se tiver chave com créditos
     if api_key and api_key not in ("REVOGADA", "SUA_CHAVE_AQUI"):
         result = _run_shodan(target, api_key)
         if "skipped" not in result:
             return result
-
-    # Fallback gratuito
     return _run_free(target)
-
 
 def _run_shodan(target, api_key):
     try:
@@ -27,8 +25,7 @@ def _run_shodan(target, api_key):
         info = api.info()
         if info.get("query_credits", 0) == 0:
             return {"skipped": "no credits"}
-
-        ip = socket.gethostbyname(target)
+        ip = _resolve(target)
         host = api.host(ip)
         return {
             "provider":     "Shodan",
@@ -43,16 +40,17 @@ def _run_shodan(target, api_key):
     except Exception as e:
         return {"skipped": str(e)}
 
-
 def _run_free(target):
     try:
-        ip = socket.gethostbyname(target)
+        ip = _resolve(target)
         result = {"provider": "IPInfo + HackerTarget (free)"}
 
-        # IPInfo — org, geo, hostname
+        ipinfo_ip = _resolve("ipinfo.io")
         r = requests.get(
-            f"https://ipinfo.io/{ip}/json",
-            timeout=10
+            f"https://{ipinfo_ip}/{ip}/json",
+            headers={"Host": "ipinfo.io"},
+            timeout=10,
+	    verify=False
         )
         if r.status_code == 200:
             data = r.json()
@@ -61,14 +59,6 @@ def _run_free(target):
             result["country"]  = data.get("country")
             result["city"]     = data.get("city")
             result["hostname"] = data.get("hostname")
-
-        # HackerTarget — port scan
-        r2 = requests.get(
-            f"https://api.hackertarget.com/nmap/?q={ip}",
-            timeout=20
-        )
-        if r2.status_code == 200 and "error" not in r2.text.lower():
-            result["port_scan"] = r2.text.strip()
 
         return result
 
