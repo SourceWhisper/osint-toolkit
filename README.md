@@ -26,6 +26,10 @@ by **[SourceWhisper](https://github.com/SourceWhisper)** · Mauricio S V Costa
 
 ---
 
+## Demo
+
+[![asciicast](https://asciinema.org/a/qSCnoXCh9uxgJEwh.svg)](https://asciinema.org/a/qSCnoXCh9uxgJEwh)
+
 ## English
 
 ### What is this?
