@@ -30,6 +30,14 @@ by **[SourceWhisper](https://github.com/SourceWhisper)** · Mauricio S V Costa
 
 [![asciicast](https://asciinema.org/a/qSCnoXCh9uxgJEwh.svg)](https://asciinema.org/a/qSCnoXCh9uxgJEwh)
 
+## Screenshots
+
+### Terminal Output
+![Terminal](assets/terminal.png)
+
+### HTML Report
+![Report](assets/report.png)
+
 ## English
 
 ### What is this?
