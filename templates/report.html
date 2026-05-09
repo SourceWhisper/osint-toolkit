@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Report — {{ data.target }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Courier New', monospace; background: #0a0a0a; color: #00ff41; padding: 2rem; }
+    .header { border: 1px solid #00ff41; padding: 1.5rem; margin-bottom: 2rem; }
+    .header h1 { font-size: 1.4rem; letter-spacing: 4px; }
+    .header .meta { color: #888; font-size: 0.8rem; margin-top: 0.5rem; }
+    .module { border: 1px solid #1a1a1a; margin-bottom: 1.5rem; }
+    .module-header { background: #111; padding: 0.8rem 1rem; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+    .module-header h2 { font-size: 0.9rem; letter-spacing: 2px; color: #00ff41; }
+    .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 2px; }
+    .badge-ok { background: #0a2a0a; color: #00ff41; border: 1px solid #00ff41; }
+    .badge-err { background: #2a0a0a; color: #ff4141; border: 1px solid #ff4141; }
+    .module-body { padding: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #111; vertical-align: top; }
+    td:first-child { color: #888; width: 200px; white-space: nowrap; }
+    td:last-child { color: #ccc; word-break: break-all; }
+    .subdomain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 4px; }
+    .subdomain-item { font-size: 0.75rem; color: #888; padding: 2px 6px; background: #0d0d0d; border-left: 2px solid #1a1a1a; }
+    .subdomain-item:hover { color: #00ff41; border-left-color: #00ff41; }
+    .count-badge { color: #00ff41; font-size: 0.8rem; margin-bottom: 0.8rem; }
+    .error { color: #ff4141; font-size: 0.85rem; padding: 0.5rem; background: #1a0a0a; border-left: 2px solid #ff4141; }
+    .status-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .status-tag { font-size: 0.72rem; padding: 2px 8px; background: #0d1a0d; border: 1px solid #1a3a1a; color: #4a9a4a; }
+    .vuln-tag { font-size: 0.72rem; padding: 2px 8px; background: #1a0d0d; border: 1px solid #3a1a1a; color: #ff6b6b; }
+    .footer { text-align: center; color: #333; font-size: 0.75rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #1a1a1a; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>[ OSINT REPORT ]</h1>
+  <div class="meta">
+    TARGET: {{ data.target }} &nbsp;|&nbsp;
+    TYPE: {{ data.type }} &nbsp;|&nbsp;
+    GENERATED: {{ generated_at.strftime('%Y-%m-%d %H:%M:%S') }}
+  </div>
+</div>
+
+{% for module_name, module_data in data.modules.items() %}
+<div class="module">
+  <div class="module-header">
+    <h2>{{ module_name.upper().replace('_', ' ') }}</h2>
+    {% if module_data.get('error') %}
+      <span class="badge badge-err">ERROR</span>
+    {% else %}
+      <span class="badge badge-ok">OK</span>
+    {% endif %}
+  </div>
+  <div class="module-body">
+
+    {% if module_data.get('error') %}
+      <div class="error">{{ module_data.error }}</div>
+
+ {% elif module_name == 'whois_lookup' %}
+  <table>
+    {% if module_data.provider %}
+    <tr><td>Provider</td><td style="color:#4a9a4a">{{ module_data.provider }}</td></tr>
+    {% endif %}
+    <tr><td>Registrar</td><td>{{ module_data.registrar or '—' }}</td></tr>
+    <tr><td>Created</td><td>{{ module_data.creation_date or '—' }}</td></tr>
+    <tr><td>Expires</td><td>{{ module_data.expiration_date or '—' }}</td></tr>
+    <tr><td>Last changed</td><td>{{ module_data.last_changed or '—' }}</td></tr>
+    <tr><td>Name servers</td><td>{{ module_data.name_servers | join('<br>') }}</td></tr>
+    <tr><td>Status</td>
+      <td><div class="status-list">
+        {% for s in module_data.status %}<span class="status-tag">{{ s }}</span>{% endfor %}
+      </div></td>
+    </tr>
+    {% if module_data.contacts %}
+    <tr><td>Contacts</td>
+      <td>{% for c in module_data.contacts %}
+        <div style="margin-bottom:4px">
+          <span style="color:#4a9a4a">{{ c.role | join(', ') }}</span> —
+          {{ c.name }} &lt;{{ c.email }}&gt;
+        </div>
+      {% endfor %}</td>
+    </tr>
+    {% endif %}
+  </table>
+
+    {% elif module_name == 'dns_enum' %}
+      <table>
+        {% for rtype, records in module_data.items() %}
+        <tr>
+          <td>{{ rtype }}</td>
+          <td>{% if records %}{{ records | join('<br>') }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+    {% elif module_name == 'subdomain_finder' %}
+      <div class="count-badge">{{ module_data.count }} subdomains found</div>
+      <div class="subdomain-grid">
+        {% for sub in module_data.subdomains %}
+          <div class="subdomain-item">{{ sub }}</div>
+        {% endfor %}
+      </div>
+
+ {% elif module_name == 'shodan_search' %}
+  <table>
+    {% if module_data.provider %}
+    <tr><td>Provider</td><td style="color:#4a9a4a">{{ module_data.provider }}</td></tr>
+    {% endif %}
+    {% if module_data.organization is defined %}
+      <tr><td>Organization</td><td>{{ module_data.organization or '—' }}</td></tr>
+      <tr><td>OS</td><td>{{ module_data.os or '—' }}</td></tr>
+      <tr><td>Country</td><td>{{ module_data.country or '—' }}</td></tr>
+      <tr><td>Hostnames</td><td>{{ (module_data.hostnames or []) | join('<br>') or '—' }}</td></tr>
+      <tr><td>Open ports</td><td>{{ (module_data.ports or []) | join(', ') or '—' }}</td></tr>
+      <tr><td>Last update</td><td>{{ module_data.last_update or '—' }}</td></tr>
+      <tr><td>CVEs</td>
+        <td><div class="status-list">
+          {% for v in (module_data.vulns or []) %}<span class="vuln-tag">{{ v }}</span>{% endfor %}
+          {% if not module_data.vulns %}—{% endif %}
+        </div></td>
+      </tr>
+    {% else %}
+      {% if module_data.ip %}<tr><td>IP</td><td>{{ module_data.ip }}</td></tr>{% endif %}
+      {% if module_data.org %}<tr><td>Organization</td><td>{{ module_data.org }}</td></tr>{% endif %}
+      {% if module_data.country %}<tr><td>Country</td><td>{{ module_data.country }}</td></tr>{% endif %}
+      {% if module_data.city %}<tr><td>City</td><td>{{ module_data.city }}</td></tr>{% endif %}
+      {% if module_data.hostname %}<tr><td>Hostname</td><td>{{ module_data.hostname }}</td></tr>{% endif %}
+      {% if module_data.port_scan %}
+        <tr><td>Port scan</td><td><pre style="font-size:0.75rem;color:#888;margin:0">{{ module_data.port_scan }}</pre></td></tr>
+      {% endif %}
+      {% if module_data.skipped %}
+        <tr><td>Status</td><td style="color:#888">{{ module_data.skipped }}</td></tr>
+      {% endif %}
+    {% endif %}
+  </table>
+
+    {% else %}
+      <pre style="font-size:0.8rem;color:#888">{{ module_data | tojson(indent=2) }}</pre>
+    {% endif %}
+
+  </div>
+</div>
+{% endfor %}
+
+<div class="footer">
+  osint-toolkit &nbsp;|&nbsp; for authorized use only
+</div>
+
+</body>
+</html>

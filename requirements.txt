@@ -1,0 +1,6 @@
+python-whois
+dnspython
+shodan
+requests
+pyyaml
+jinja2

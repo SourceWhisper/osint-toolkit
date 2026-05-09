@@ -1,0 +1,3 @@
+shodan_api_key: "YOUR_SHODAN_KEY"
+hunter_api_key: "YOUR_HUNTER_KEY"   # free at hunter.io
+hibp_api_key:   ""                  # paid at haveibeenpwned.com/API/Key

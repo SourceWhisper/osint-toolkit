@@ -1,0 +1,7 @@
+venv/
+config.yaml
+__pycache__/
+*.pyc
+*.json
+osint/__pycache__/
+osint/modules/__pycache__/
