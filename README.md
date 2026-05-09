@@ -111,7 +111,7 @@ nano config.yaml
 python3 main.py tesla.com --type domain --output html
 
 # Investigate a .br government domain
-python3 main.py bebedouro.sp.gov.br --type domain --output json
+python3 main.py campinas.sp.gov.br --type domain --output json
 
 # Check an email
 python3 main.py user@example.com --type email --output json
