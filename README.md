@@ -125,7 +125,7 @@ python3 main.py example.com --type domain --output terminal
 
 ### Sample Output
 
-Running against `bebedouro.sp.gov.br` (city government of Bebedouro, SP — Brazil):
+Running against `campinas.sp.gov.br` (city government of Campinas, SP — Brazil):
 
 ```json
 {
@@ -136,19 +136,19 @@ Running against `bebedouro.sp.gov.br` (city government of Bebedouro, SP — Braz
     "contacts": [{"role": ["technical"], "name": "Gerencia Internet PRODESP", "email": "csirt@sp.gov.br"}]
   },
   "subdomain_finder": {
-    "count": 80,
-    "subdomains": ["cpanel.bebedouro.sp.gov.br", "whm.dedi-14424353.bebedouro.sp.gov.br", "..."]
+    "count": 49,
+    "subdomains": ["funcional.api-dev.gmc.campinas.sp.gov.br", "teste-desif.campinas.sp.gov.br", "..."] API de desenvolvimento exposta via CT logs, ambiente de teste do sistema fiscal
   },
   "shodan_search": {
     "provider": "IPInfo + HackerTarget (free)",
-    "org": "AS46606 Unified Layer",
-    "city": "Provo",
-    "country": "US"
+    "org": "AS53116 Inform\u00e1tica de Munic\u00edpios Associados S/A - IMA",
+    "city": "Campinas",
+    "country": "BR"
   }
 }
 ```
 
-> **Interesting finding:** The Bebedouro city government website is hosted in Provo, Utah, USA (Unified Layer shared hosting). The SOA record reveals the internal sysadmin contact: `informatica.ian@bebedouro.sp.gov.br`. Certificate Transparency logs exposed `cpanel.bebedouro.sp.gov.br` and `whm.dedi-14424353.bebedouro.sp.gov.br` — control panels accessible from the public internet.
+> **Interesting finding:** The B******* city government website is hosted in Provo, Utah, USA (Unified Layer shared hosting). The SOA record reveals the internal sysadmin contact: `informatica.ian@********.sp.gov.br`. Certificate Transparency logs exposed `cpanel.**********.sp.gov.br` and `whm.dedi-14424353.**********.sp.gov.br` — control panels accessible from the public internet.
 
 ### Disclaimer
 
@@ -202,7 +202,7 @@ nano config.yaml
 python3 main.py tesla.com --type domain --output html
 
 # Investigar um domínio .gov.br
-python3 main.py bebedouro.sp.gov.br --type domain --output json
+python3 main.py campinas.sp.gov.br --type domain --output json
 
 # Verificar um e-mail
 python3 main.py usuario@exemplo.com --type email --output json
