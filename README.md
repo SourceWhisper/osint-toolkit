@@ -53,7 +53,7 @@ Built from scratch in Python. No GUI, no bloat — just clean terminal output an
 - [x] Subdomain discovery via **Certificate Transparency logs** (crt.sh)
 - [x] Host intel via **Shodan** (paid) with automatic fallback to **IPInfo + HackerTarget** (free)
 - [x] Email verification via **HaveIBeenPwned** (paid) with automatic fallback to **Hunter.io** (free)
-- [x] HTML report with hacker-themed dark UI
+- [x] HTML report with dark UI
 - [x] JSON report for pipeline integration
 - [x] Modular architecture — add new modules without touching core logic
 - [ ] IP geolocation map (roadmap)
@@ -183,7 +183,7 @@ Construído do zero em Python. Sem interface gráfica, sem dependências desnece
 - [x] Descoberta de subdomínios via **Certificate Transparency logs** (crt.sh)
 - [x] Inteligência de host via **Shodan** (pago) com fallback automático para **IPInfo + HackerTarget** (gratuito)
 - [x] Verificação de e-mail via **HaveIBeenPwned** (pago) com fallback para **Hunter.io** (gratuito)
-- [x] Relatório HTML com tema hacker dark
+- [x] Relatório HTML com tema dark
 - [x] Relatório JSON para integração com pipelines
 - [x] Arquitetura modular — adicione módulos sem modificar o núcleo
 - [ ] Mapa de geolocalização de IP (roadmap)
